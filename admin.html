@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin | Kettlem & Thiago</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7f4;
+            color: #2e4a31;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 15px;
+        }
+        .admin-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: none; 
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 10px 0;
+        }
+        .header h2 {
+            margin: 5px 0;
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .metric-card {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            text-align: center;
+            border-left: 4px solid #557058;
+        }
+        .metric-card.highlight {
+            grid-column: span 2;
+            border-left-color: #2e4a31;
+            background: #eef5ee;
+        }
+        .metric-val {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        .metric-label {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #666;
+        }
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1dfd1;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .guest-card {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .guest-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .guest-name {
+            font-weight: 700;
+            font-size: 1.05em;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .badge {
+            font-size: 0.75em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge.sim { background: #e2f0e2; color: #2e4a31; }
+        .badge.nao { background: #fbebeb; color: #a94442; }
+        
+        .guest-meta {
+            font-size: 0.85em;
+            color: #555;
+            background: #f9faf9;
+            padding: 8px;
+            border-radius: 6px;
+        }
+        .actions-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: center;
+        }
+        .btn-edit { background: #edf3ed; color: #2e4a31; }
+        .btn-edit:hover { background: #dce7dc; }
+        .btn-del { background: #fbebeb; color: #a94442; }
+        .btn-del:hover { background: #f7d5d5; }
+        
+        #auth-screen {
+            max-width: 350px;
+            margin: 100px auto;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        #auth-screen input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        #auth-screen button {
+            background: #2e4a31;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <h3>Acesso Restrito</h3>
+        <p style="font-size:0.85em; color:#666;">Insira a senha do painel</p>
+        <input type="password" id="passkey" placeholder="Senha">
+        <button onclick="verifyPass()">Entrar</button>
+    </div>
+
+    <div class="admin-container" id="adminDashboard">
+        <div class="header">
+            <span class="metric-label">Painel de Gerenciamento</span>
+            <h2>Kettlem & Thiago</h2>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card highlight">
+                <div class="metric-label">Público Geral Estimado</div>
+                <div class="metric-val" id="mGeral">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Confirmados (Sim)</div>
+                <div class="metric-val" id="mSim">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">+ Acompanhantes</div>
+                <div class="metric-val" id="mAcomp">0</div>
+            </div>
+        </div>
+
+        <input type="text" id="search" class="search-box" placeholder="🔎 Buscar por nome..." oninput="renderList()">
+
+        <div id="lista-convidados">
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwi7BomcKGE_prkif-K5Wkg-kgIeX4aSYDlR-PlkqwwgWtbdkUwFx52ovsRJrIz6YaN/exec';
+        const CONFIG_PASSWORD = '123'; // Você pode trocar a senha '123' aqui se quiser
+        
+        let listaGlobal = [];
+
+        function verifyPass() {
+            const input = document.getElementById('passkey').value;
+            if (input === CONFIG_PASSWORD) {
+                sessionStorage.setItem('wedding_auth', 'true');
+                initDashboard();
+            } else {
+                alert('Senha incorreta!');
+            }
+        }
+
+        function initDashboard() {
+            if (sessionStorage.getItem('wedding_auth') === 'true') {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                fetchData();
+            }
+        }
+
+        function fetchData() {
+            const container = document.getElementById('lista-convidados');
+            container.innerHTML = '<p style="text-align:center; font-size:0.9em; color:#666;">Carregando lista de convidados...</p>';
+            
+            fetch(scriptURL)
+                .then(res => res.json())
+                .then(data => {
+                    listaGlobal = data;
+                    calculateMetrics();
+                    renderList();
+                })
+                .catch(err => {
+                    container.innerHTML = '<p style="text-align:center; color:red;">Erro ao buscar dados do servidor.</p>';
+                });
+        }
+
+        function calculateMetrics() {
+            let simCount = 0;
+            let acompCount = 0;
+
+            listaGlobal.forEach(g => {
+                if (g.presenca === 'Sim') {
+                    simCount++;
+                    acompCount += parseInt(g.acompanhantes || 0);
+                }
+            });
+
+            document.getElementById('mSim').innerText = simCount;
+            document.getElementById('mAcomp').innerText = acompCount;
+            document.getElementById('mGeral').innerText = simCount + acompCount;
+        }
+
+        function renderList() {
+            const container = document.getElementById('lista-convidados');
+            const searchVal = document.getElementById('search').value.toLowerCase();
+            container.innerHTML = '';
+
+            const listFiltered = listaGlobal.filter(g => g.nome.toLowerCase().includes(searchVal));
+
+            if(listFiltered.length === 0) {
+                container.innerHTML = '<p style="text-align:center; font-size:0.9em; color:#666;">Nenhum convidado encontrado.</p>';
+                return;
+            }
+
+            listFiltered.forEach(g => {
+                const card = document.createElement('div');
+                card.className = 'guest-card';
+                
+                const badgeClass = g.presenca === 'Sim' ? 'sim' : 'nao';
+                const labelAcompanhantes = g.presenca === 'Sim' ? `Acompanhantes adicionais: <b>${g.acompanhantes}</b>` : 'Não se aplica (Ausente)';
+
+                card.innerHTML = `
+                    <div class="guest-info">
+                        <div class="guest-name">${g.nome}</div>
+                        <span class="badge ${badgeClass}">${g.presenca}</span>
+                    </div>
+                    <div class="guest-meta">
+                        ${labelAcompanhantes}
+                    </div>
+                    <div class="actions-row">
+                        ${g.presenca === 'Sim' ? `<button class="btn btn-edit" onclick="editAcomp('${g.id}', ${g.acompanhantes})">Acompanhantes</button>` : ''}
+                        <button class="btn btn-del" onclick="deleteGuest('${g.id}')">Excluir</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function editAcomp(id, currentVal) {
+            const novaQtd = prompt("Digite a quantidade de acompanhantes extras para este convidado:", currentVal);
+            if (novaQtd === null) return; 
+            
+            const num = parseInt(novaQtd);
+            if (isNaN(num) || num < 0) {
+                alert("Por favor, digite um número válido (maior ou igual a 0).");
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('action', 'updateAcompanhantes');
+            params.append('id', id);
+            params.append('qtd', num);
+
+            fetch(scriptURL, { method: 'POST', body: params })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.result === 'success') {
+                        fetchData();
+                    } else {
+                        alert("Erro ao atualizar.");
+                    }
+                });
+        }
+
+        function deleteGuest(id) {
+            if (!confirm("Tem certeza absoluta que deseja remover este convidado da lista?")) return;
+
+            const params = new URLSearchParams();
+            params.append('action', 'delete');
+            params.append('id', id);
+
+            fetch(scriptURL, { method: 'POST', body: params })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.result === 'success') {
+                        fetchData();
+                    } else {
+                        alert("Erro ao excluir.");
+                    }
+                });
+        }
+
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
