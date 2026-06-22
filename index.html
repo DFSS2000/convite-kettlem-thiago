@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Presença | Kettlem & Thiago</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fbf8;
+            color: #2e4a31;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background: #ffffff;
+            max-width: 420px;
+            width: 100%;
+            padding: 35px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(46, 74, 49, 0.06);
+            text-align: center;
+            border-top: 6px solid #2e4a31;
+            box-sizing: border-box;
+        }
+        .verse {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.9em;
+            color: #557058;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #2e4a31;
+            font-size: 2.4em;
+            margin: 0 0 15px 0;
+            font-weight: 600;
+        }
+        .details {
+            font-size: 0.9em;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            color: #444;
+        }
+        .details strong {
+            color: #2e4a31;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            text-align: left;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #2e4a31;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d1dfd1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            box-sizing: border-box;
+            background-color: #fafdfa;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2e4a31;
+            background-color: #ffffff;
+        }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #edf3ed;
+            border-radius: 8px;
+            background: #fafdfa;
+            transition: background 0.2s;
+        }
+        .radio-item:hover {
+            background: #f1f6f1;
+        }
+        .radio-item input {
+            accent-color: #2e4a31;
+            width: 18px;
+            height: 18px;
+        }
+        button {
+            background-color: #2e4a31;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            background-color: #1c2e1e;
+        }
+        #mensagem-sucesso {
+            display: none;
+            color: #2e4a31;
+            font-weight: 600;
+            margin-top: 15px;
+            font-size: 0.95em;
+            background: #eef5ee;
+            padding: 12px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="verse">
+            "Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém separe."<br>
+            <span style="font-size: 0.85em; display:block; margin-top:5px;">MATEUS 19:6</span>
+        </div>
+        
+        <h1>Kettlem<br>&<br>Thiago</h1>
+        
+        <div class="details">
+            <strong>Sexta-Feira, 04 de Setembro de 2026 às 17h</strong><br>
+            Ecoville Restaurante Gurupi
+        </div>
+
+        <form id="rsvpForm">
+            <div>
+                <label for="nome">Nome do Convidado</label>
+                <input type="text" id="nome" required placeholder="Digite seu nome completo">
+            </div>
+
+            <div>
+                <label>Confirmar Presença</label>
+                <div class="radio-group">
+                    <label class="radio-item">
+                        <input type="radio" name="presenca" value="Sim" required> 
+                        Sim, confirmo minha presença
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="presenca" value="Não"> 
+                        Não poderei comparecer
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" id="btnSubmit">Confirmar Presença</button>
+            <div id="mensagem-sucesso">Presença enviada com sucesso!</div>
+        </form>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwi7BomcKGE_prkif-K5Wkg-kgIeX4aSYDlR-PlkqwwgWtbdkUwFx52ovsRJrIz6YaN/exec';
+        
+        const form = document.getElementById('rsvpForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const msgSucesso = document.getElementById('mensagem-sucesso');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = 'Enviando...';
+
+            const params = new URLSearchParams();
+            params.append('action', 'rsvp');
+            params.append('nome', document.getElementById('nome').value);
+            params.append('presenca', document.querySelector('input[name="presenca"]:checked').value);
+
+            fetch(scriptURL, { method: 'POST', body: params })
+                .then(response => response.json())
+                .then(res => {
+                    if(res.result === 'success') {
+                        msgSucesso.style.display = 'block';
+                        form.reset();
+                    } else {
+                        alert('Erro ao salvar. Tente novamente.');
+                    }
+                    btnSubmit.innerText = 'Confirmar Presença';
+                    btnSubmit.disabled = false;
+                })
+                .catch(error => {
+                    alert('Erro de conexão. Tente novamente.');
+                    btnSubmit.innerText = 'Confirmar Presença';
+                    btnSubmit.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
