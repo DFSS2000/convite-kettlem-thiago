@@ -124,15 +124,28 @@
         button:hover {
             background-color: #1c2e1e;
         }
-        #mensagem-sucesso {
+        
+        /* Estilos da nova tela de sucesso */
+        #tela-sucesso {
             display: none;
+            padding: 20px 0;
+            animation: fadeIn 0.5s ease-in;
+        }
+        #tela-sucesso h2 {
+            font-family: 'Playfair Display', serif;
             color: #2e4a31;
-            font-weight: 600;
-            margin-top: 15px;
-            font-size: 0.95em;
-            background: #eef5ee;
-            padding: 12px;
-            border-radius: 6px;
+            font-size: 2em;
+            margin: 0 0 15px 0;
+        }
+        #tela-sucesso p {
+            color: #444;
+            font-size: 1.05em;
+            line-height: 1.6;
+            margin: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -172,8 +185,12 @@
             </div>
 
             <button type="submit" id="btnSubmit">Confirmar Presença</button>
-            <div id="mensagem-sucesso">Presença enviada com sucesso!</div>
         </form>
+
+        <div id="tela-sucesso">
+            <h2>Obrigado!</h2>
+            <p>Sua resposta foi registrada com sucesso.</p>
+        </div>
     </div>
 
     <script>
@@ -181,7 +198,7 @@
         
         const form = document.getElementById('rsvpForm');
         const btnSubmit = document.getElementById('btnSubmit');
-        const msgSucesso = document.getElementById('mensagem-sucesso');
+        const telaSucesso = document.getElementById('tela-sucesso');
 
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -197,13 +214,14 @@
                 .then(response => response.json())
                 .then(res => {
                     if(res.result === 'success') {
-                        msgSucesso.style.display = 'block';
-                        form.reset();
+                        // Esconde o formulário e mostra a mensagem de sucesso
+                        form.style.display = 'none';
+                        telaSucesso.style.display = 'block';
                     } else {
                         alert('Erro ao salvar. Tente novamente.');
+                        btnSubmit.innerText = 'Confirmar Presença';
+                        btnSubmit.disabled = false;
                     }
-                    btnSubmit.innerText = 'Confirmar Presença';
-                    btnSubmit.disabled = false;
                 })
                 .catch(error => {
                     alert('Erro de conexão. Tente novamente.');
